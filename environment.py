@@ -6,12 +6,13 @@ from time import sleep, time
 import melee
 import numpy as np
 
-from Project1.getThread import GetThread
-from Project1.moveset import Moveset
+from getThread import GetThread
+
+from moveset import Moveset
 from postThread import PostThread
 
 
-from Project1.reward import Reward
+from reward import Reward
 from agent import Agent
 
 

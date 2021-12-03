@@ -20,8 +20,8 @@ class Agent():
         # self.controller = controller
         # self.moveset = Moveset(controller)
         self.possible_actions = [i for i in range(30)]
-        # self.epsilon = 0.5397473191725894
-        self.epsilon = 0.05
+        self.epsilon = 0.4370503190341745
+        # self.epsilon = 0.05
         # self.epsilon = 0.9848718460076812
         self.epsilon_decay = .9995
         self.epsilon_min = 0.05
@@ -39,27 +39,15 @@ class Agent():
 
     def create_model(self):
         model = Sequential()
-        model.add(Input(26,))
-        # model.add(Reshape((1, 44)))
-        # model.add(Embedding(44, 128))
-        # model.add(LSTM(128, return_sequences=True))
-        # model.add(LSTM(256))
-        # model.add(Flatten())
-
-        model.add(Dense(128, activation="swish"))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.4))
-        model.add(Dense(512, activation="swish"))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.4))
-        model.add(Dense(1024, activation="swish"))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.4))
-        model.add(Dense(512, activation="swish"))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.4))
-        model.add(Dense(30, activation="softmax"))
-        optimizer = Adam(self.learning_rate)
+        model.add(Input(26, ))
+        model.add(Dense(676, activation="relu"))
+        model.add(Dropout(0.25))
+        model.add(Dense(1024, activation="relu"))
+        model.add(Dropout(0.25))
+        model.add(Dense(512, activation="relu"))
+        model.add(Dropout(0.25))
+        model.add(Dense(30, activation="linear"))
+        optimizer = Adam(lr=3e-4, decay=1e-5)
         model.compile(optimizer, loss='mse')
         model.summary()
         return model
