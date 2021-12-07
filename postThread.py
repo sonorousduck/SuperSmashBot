@@ -5,7 +5,7 @@ import numpy as np
 
 
 class PostThread(Thread):
-    def __init__(self, agentStates, agentNextStates, agentActions, agentRewards, gameDones, agent):
+    def __init__(self, agentStates, agentNextStates, agentActions, agentRewards, gameDones, agent, previousActions):
         Thread.__init__(self)
         self.agentStates = agentStates
         self.agentNextStates = agentNextStates
@@ -13,6 +13,7 @@ class PostThread(Thread):
         self.agentRewards = agentRewards
         self.gameDones = gameDones
         self.agent = agent
+        self.previousActions = previousActions
 
     def run(self):
         url = "http://127.0.0.1:9000/smashBot/postState/"
@@ -22,7 +23,7 @@ class PostThread(Thread):
         agentNextStates = agentNextStates.tolist()
 
         requests.post(url=url, json={'states': agentStates, 'actions': self.agentActions, 'rewards': self.agentRewards,
-                        'nextStates': agentNextStates, 'dones': self.gameDones, 'agent': self.agent})
+                        'nextStates': agentNextStates, 'dones': self.gameDones, 'agent': self.agent, 'previousActions': self.previousActions})
 
 
 # def postAgent(agentStates, agentNextStates, agentActions, agentRewards, gameDones, agent):
