@@ -2,7 +2,6 @@ import sys
 import random
 from copy import copy
 import os
-from time import sleep, time
 import melee
 import numpy as np
 
@@ -126,18 +125,6 @@ if __name__ == "__main__":
     # This is for captain falcon's jab. Changes frame data depending on which one he is on
     jabCount = 0
 
-    # ACTIONS1 =[moveset1.moveLeft, moveset1.moveRight, moveset1.crouch, moveset1.sprintLeft,
-    #            moveset1.sprintRight,
-    #            moveset1.jumpLeft, moveset1.jumpRight, moveset1.jump, moveset1.BDown,
-    #            moveset1.BLeft,
-    #            moveset1.BRight, moveset1.BUp, moveset1.tiltLeftA, moveset1.tiltRightA,
-    #            moveset1.tiltDownA,
-    #            moveset1.tiltUpA, moveset1.cUp, moveset1.cDown, moveset1.cLeft, moveset1.cRight,
-    #            moveset1.shield, moveset1.dodgeLeft, moveset1.dodgeRight, moveset1.spotDodge,
-    #            moveset1.taunt,
-    #            moveset1.A, moveset1.B]
-
-
     rewardPlayer = Reward()
     rewardOpponent = Reward()
 
@@ -147,18 +134,16 @@ if __name__ == "__main__":
     allp1NextStates = []
     allp1Actions = []
     allp1Dones = []
-    # allp2States = []
-    # allp2Rewards = []
-    # allp2NextStates = []
-    # allp2Actions = []
-    # allp2Dones = []
+    allp1PreviousActions = []
+
     postThreads = []
     getThreads = []
     previousMove = 0
     moveCount = 0
-    moveLag = 0
     firstRun = True
     agentAction = 0
+    firstMove = True
+    previousAction = 0
 
     while True:
         gamestate = console.step()
@@ -184,13 +169,7 @@ if __name__ == "__main__":
             player2Data = gamestate.players[controller_opponent.port]
 
             if discovered_port > 0:
-                # Ease of referring to the data
-                # if previousMove == 0:
-                #     chooseAction = True
-                # if moveLag > 0:
-                #     moveLag -= 1
                 if i / (previousMove + 1) == 1:
-                    # moveLag = 8
                     controller.release_all()
                     i = 0
                     moveCount += 1
@@ -198,9 +177,18 @@ if __name__ == "__main__":
                     # Get the states
                     playerOneState = np.array(combineStates(getState(player1Data, gameDone), getState(player2Data, gameDone)))
 
+                    if firstMove:
+                        action = [0 for _ in range(30)]
+                        playerOneState = np.append(playerOneState, action)
+                    else:
+                        action = [0 for _ in range(30)]
+                        action[previousAction] = 1.0
+                        playerOneState = np.append(playerOneState, action)
+
 
                     if np.random.rand() < agent.epsilon:
                         agentAction = random.sample(agent.possible_actions, 1)[0]
+                        previousAction = agentAction
                         actionName = actionToName[f'{agentAction}']
 
                         if not player1Data.on_ground:
@@ -235,16 +223,15 @@ if __name__ == "__main__":
                                 if jabCount > 2:
                                     jabCount = 0
                                 previousMove = FRAMES[f'jab{jabCount}']
-                                # jabCount += 1
 
 
                         else:
                             previousMove = FRAMES[actionName]
                     else:
                         playerOneStateReshape = np.array(playerOneState).reshape(1, -1)
-                        # playerOneStateReshape = playerOneState.reshape(1, -1)
                         x = agent.model.predict(playerOneStateReshape)[0]
                         agentAction = agent.possible_actions[np.argmax(x)]
+                        previousAction = agentAction
 
                         actionName = actionToName[f'{agentAction}']
 
@@ -284,8 +271,6 @@ if __name__ == "__main__":
                         else:
                             previousMove = FRAMES[actionName]
 
-                    print(actionName)
-                    print(agentAction)
                     # Perform the action
                     ACTIONS[agentAction]()
 
@@ -295,18 +280,22 @@ if __name__ == "__main__":
                     allp1Actions.append(agentAction)
                     allp1Rewards.append(agentReward)
                     allp1NextStates.append(np.asarray(combineStates(getState(gamestate.players[controller.port], gameDone), getState(gamestate.players[controller_opponent.port], gameDone))).astype('float32').tolist())
+                    allp1PreviousActions.append(agentAction)
 
+                    allp1PreviousActions = action
                     # allp1NextStates.append(state)
                 else:
                     ACTIONS[agentAction]()
 
-                if moveLag == 0:
-                    i += 1
+                i += 1
+                # if moveLag == 0:
+                #     i += 1
 
                 # Get the rewards for its actions and such
 
 
                 if player2Data.stock == 0:
+                    firstMove = True
 
                     gameDone = True
 
@@ -339,26 +328,20 @@ if __name__ == "__main__":
                     getThread = GetThread()
                     getThreads.append(getThread)
                     getThread.start()
-                    # getThread.join()
 
                     allp1States = []
                     allp1Rewards = []
                     allp1NextStates = []
                     allp1Actions = []
                     allp1Dones = []
-                    # allp2States = []
-                    # allp2Rewards = []
-                    # allp2NextStates = []
-                    # allp2Actions = []
-                    # allp2Dones = []
 
 
                 elif player1Data.stock == 0:
+                    firstMove = True
                     gameDone = True
-                    agentReward = -2000
+                    agentReward = -1000
 
                     allp1Dones.append(gameDone)
-                    # allp2Dones.append(gameDone)
 
                     agentReward += rewardPlayer.understandState(player1Data, player2Data)
                     allp1Rewards.append(agentReward)
@@ -377,9 +360,6 @@ if __name__ == "__main__":
 
                     postThread.start()
 
-
-
-
                     agent.adaptiveEGreedy()
                     with open('epsilon.txt', 'w') as f:
                         f.write(str(agent.epsilon))
@@ -392,22 +372,15 @@ if __name__ == "__main__":
                     allp1NextStates = []
                     allp1Actions = []
                     allp1Dones = []
-                    # allp2States = []
-                    # allp2Rewards = []
-                    # allp2NextStates = []
-                    # allp2Actions = []
-                    # allp2Dones = []
 
                     getThread = GetThread()
                     getThreads.append(getThread)
                     getThread.start()
-                    # getThread.join()
 
 
                 else:
                     allp1Dones.append(gameDone)
-                    # allp2Dones.append(gameDone)
-                    # allp1Rewards.append(agentReward)
+
 
             else:
                 # If the discovered port was unsure, reroll our costume for next time

@@ -21,14 +21,10 @@ class Agent():
         # self.moveset = Moveset(controller)
         self.possible_actions = [i for i in range(30)]
         self.epsilon = 0.4370503190341745
-        # self.epsilon = 0.05
-        # self.epsilon = 0.9848718460076812
         self.epsilon_decay = .9995
         self.epsilon_min = 0.05
         self.gamma = 0.90
-        # self.learning_rate = 0.0025
         self.learning_rate = .025
-        self.batch_size = 256
         self.learns = 0
         self.model = self.create_model()
         self.target_model = clone_model(self.model)
@@ -39,13 +35,9 @@ class Agent():
 
     def create_model(self):
         model = Sequential()
-        model.add(Input(26, ))
-        model.add(Dense(676, activation="relu"))
-        model.add(Dropout(0.25))
-        model.add(Dense(1024, activation="relu"))
-        model.add(Dropout(0.25))
-        model.add(Dense(512, activation="relu"))
-        model.add(Dropout(0.25))
+        model.add(Input(56, ))
+        model.add(Dense(128, activation="tanh"))
+        model.add(Dense(128, activation="tanh"))
         model.add(Dense(30, activation="linear"))
         optimizer = Adam(lr=3e-4, decay=1e-5)
         model.compile(optimizer, loss='mse')
@@ -66,22 +58,9 @@ class Agent():
             self.epsilon *= self.epsilon_decay
         self.epsilon = max(self.epsilon, self.epsilon_min)
 
-        # if len(self.memory) > self.batch_size:
-        #     self.rewards.append(self.oneReward)
-
-        # if len(self.rewards) > 250:
-        #     self.averageRewardList.append(np.mean(self.rewards[:-250]))
-        # else:
-        #     self.averageRewardList.append(np.mean(self.rewards))
-        #
-        # self.oneReward = 0
         print(f"Agent Epsilon now at {self.epsilon}")
 
 
-    def remember(self, state, next_state, action, reward, done):
-        self.memory.append((state, action, reward, next_state, done))
-
-
-
-
+    def remember(self, state, next_state, action, reward, done, previousAction):
+        self.memory.append((state, action, reward, next_state, done, previousAction))
 
