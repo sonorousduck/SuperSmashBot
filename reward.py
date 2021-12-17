@@ -13,12 +13,12 @@ class Reward:
         changed = False
 
         if self.stocks > int(playerData.stock):
-            reward -= 450
+            reward -= 200
             self.stocks = int(playerData.stock)
             changed = True
 
         if self.percent < playerData.percent:
-            reward -= .75 * (abs(self.percent - playerData.percent))
+            reward -= .5 * (abs(self.percent - playerData.percent))
             self.percent = playerData.percent
             changed = True
 

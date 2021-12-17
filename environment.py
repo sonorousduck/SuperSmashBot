@@ -399,7 +399,7 @@ if __name__ == "__main__":
                                                 melee.Stage.FINAL_DESTINATION,
                                                 "",
                                                 costume=0,
-                                                cpu_level=1,
+                                                cpu_level=3,
                                                 autostart=True,
                                                 swag=False)
 
