@@ -7,5 +7,5 @@
 [Django Server](https://github.com/sonorousduck/DjangoSuperSmashServer)
 
 ## Presentation
-[Presentation](./Final Slides.pdf)
+[Presentation](./Final\ Slides.pdf)
 
