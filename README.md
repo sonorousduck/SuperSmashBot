@@ -5,3 +5,7 @@
 
 ## Django Server
 [Django Server](https://github.com/sonorousduck/DjangoSuperSmashServer)
+
+## Presentation
+[Presentation](./Final\ Slides.pptx)
+
