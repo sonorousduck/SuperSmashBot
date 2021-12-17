@@ -155,7 +155,8 @@ if __name__ == "__main__":
             player2Data = gamestate.players[controller_opponent.port]
 
             if discovered_port > 0:
-                if i / (previousMove + 1) == 1:
+                if i % 10 == 0:
+                    # if i / (previousMove + 1) == 1:
                     controller.release_all()
                     i = 0
                     moveCount += 1
@@ -399,7 +400,7 @@ if __name__ == "__main__":
                                                 melee.Stage.FINAL_DESTINATION,
                                                 "",
                                                 costume=0,
-                                                cpu_level=3,
+                                                cpu_level=1,
                                                 autostart=True,
                                                 swag=False)
 

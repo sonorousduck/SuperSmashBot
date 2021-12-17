@@ -18,7 +18,7 @@ class Reward:
             changed = True
 
         if self.percent < playerData.percent:
-            reward -= .5 * (abs(self.percent - playerData.percent))
+            reward -= abs(self.percent - playerData.percent)
             self.percent = playerData.percent
             changed = True
 
@@ -30,13 +30,13 @@ class Reward:
 
 
         if self.opponent_percent < otherPlayerData.percent:
-            reward += 0.5 * (abs(self.opponent_percent - otherPlayerData.percent))
+            reward += abs(self.opponent_percent - otherPlayerData.percent)
             self.opponent_percent = otherPlayerData.percent
             changed = True
 
-        if not changed:
-            # Give a punishment for nothing happening too
-            reward -= 1
+        # if not changed:
+        #     # Give a punishment for nothing happening too
+        #     reward -= 1
 
         return reward
 

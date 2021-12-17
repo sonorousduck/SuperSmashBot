@@ -20,9 +20,10 @@ class Agent():
         # self.controller = controller
         # self.moveset = Moveset(controller)
         self.possible_actions = [i for i in range(30)]
-        self.epsilon = 0.2156681016865167
+        self.epsilon = 0.19073842073576128
+        # self.epsilon = 1.0
         # self.epsilon = 0.05
-        self.epsilon_decay = .9975
+        self.epsilon_decay = .975
         self.epsilon_min = 0.05
         self.gamma = 0.90
         self.learning_rate = .025
@@ -31,6 +32,7 @@ class Agent():
         # self.target_model = clone_model(self.model)
         self.rewards = []
         self.averageRewardList = []
+        self.averageRewardList = []
         self.oneReward = 0
 
 
@@ -38,12 +40,24 @@ class Agent():
         model = Sequential()
         model.add(Input(56, ))
         model.add(Dense(128, activation="tanh"))
-        model.add(Dense(128, activation="tanh"))
+        model.add(Dense(256, activation="tanh"))
+        model.add(Dense(512, activation="tanh"))
+        model.add(Dense(256, activation="tanh"))
         model.add(Dense(30, activation="linear"))
         optimizer = Adam(learning_rate=3e-4, decay=1e-5)
         model.compile(optimizer, loss='mse')
         model.summary()
         return model
+
+        # model = Sequential()
+        # model.add(Input(56, ))
+        # model.add(Dense(128, activation="tanh"))
+        # model.add(Dense(256, activation="tanh"))
+        # model.add(Dense(30, activation="linear"))
+        # optimizer = Adam(learning_rate=3e-4, decay=1e-5)
+        # model.compile(optimizer, loss='mse')
+        # model.summary()
+        # return model
 
 
     def act(self, state):
